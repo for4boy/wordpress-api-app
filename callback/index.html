@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>OAuth Callback</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background-color: #f0f2f5; color: #1c1e21; display: flex; justify-content: center; align-items: center; min-height: 90vh; }
+        .container { background-color: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; max-width: 600px; }
+        h1 { color: #1877f2; margin-bottom: 20px; }
+        p { font-size: 16px; line-height: 1.6; }
+        code { background-color: #e9f2ff; padding: 5px 8px; border-radius: 4px; font-family: 'Courier New', Courier, monospace; font-size: 1.1em; display: block; margin-top: 15px; word-break: break-all; border: 1px solid #ccd0d5; }
+        .instructions { margin-top: 25px; color: #606770; font-weight: bold; }
+        .copy-button { background-color: #1877f2; color: white; border: none; padding: 10px 15px; text-align: center; text-decoration: none; display: inline-block; font-size: 14px; margin-top: 15px; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+        .copy-button:hover { background-color: #166fe5; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>WordPress.com OAuth 授權回調</h1>
+        <p>授權已處理。請複製以下授權碼 (code)，然後貼回到您的 Python 腳本提示中。</p>
+        <div id="info">
+            <p>正在讀取授權碼...</p>
+        </div>
+        <p class="instructions">
+            如果看到 "code="，請複製等號後面的那串字符。
+        </p>
+    </div>
+
+    <script>
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        const code = getQueryParam('code');
+        const error = getQueryParam('error');
+        const infoDiv = document.getElementById('info');
+        let displayedCode = '';
+
+        if (code) {
+            displayedCode = code;
+            infoDiv.innerHTML = '<p><strong>授權碼 (Authorization Code):</strong></p><code>' + code + '</code>' +
+                                '<button class="copy-button" onclick="copyToClipboard(\'' + code + '\')">複製授權碼</button>' +
+                                '<p style="margin-top:15px;"><strong>或複製完整重導向 URL:</strong></p><code>' + window.location.href + '</code>' +
+                                '<button class="copy-button" onclick="copyToClipboard(window.location.href)">複製完整 URL</button>';
+        } else if (error) {
+            infoDiv.innerHTML = '<p style="color: red;"><strong>授權錯誤:</strong></p><code>' + error + '</code>' +
+                                '<p>錯誤描述: ' + (getQueryParam('error_description') || '無') + '</p>';
+        } else {
+            infoDiv.innerHTML = '<p style="color: orange;">未在 URL 中找到授權碼 (code) 或錯誤訊息。</p>' +
+                                '<p><strong>完整重導向 URL:</strong></p><code>' + window.location.href + '</code>';
+        }
+
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(function() {
+                alert('已複製到剪貼簿！');
+            }, function(err) {
+                alert('複製失敗: ' + err);
+            });
+        }
+    </script>
+</body>
+</html>
